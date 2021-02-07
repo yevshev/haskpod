@@ -1,0 +1,25 @@
+name: publish
+
+on:
+  push:
+    # Publish `main` as `latest` image.
+    branches:
+      - main
+
+jobs:
+  # Push image to GitHub Container Registry.
+  push:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+        
+      - uses: actions/checkout@v2
+
+      - name: Build image
+        run: podman build . -t ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA
+
+      - name: Push image
+        run: |
+          echo ${{ secrets.CR_PAT }} | podman login ghcr.io -u $GITHUB_ACTOR --password-stdin
+          podman push ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA
