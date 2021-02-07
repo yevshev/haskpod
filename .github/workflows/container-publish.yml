@@ -34,10 +34,15 @@ jobs:
     if: github.event_name == 'push'
 
     steps:
+        
       - uses: actions/checkout@v2
 
       - name: Build image
         run: podman build -t hasktorch . 
 
       - name: Push image
-        run: podman push --creds $REGISTRY_USERNAME:$REGISTRY_TOKEN haskpod ghcr.io/$REGISTRY_USERNAME/haskpod:latest
+        env:
+          USERNAME: ${{ secrets.SREGISTRY_USERNAME }}
+          TOKEN: ${{ secrets.SREGISTRY_TOKEN }}
+
+        run: podman push --creds "$USERNAME":"$TOKEN" haskpod ghcr.io/$USERNAME/haskpod:latest
